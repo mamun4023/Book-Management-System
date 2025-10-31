@@ -4,8 +4,8 @@ import { Document } from 'mongoose';
 
 @Schema({ timestamps: true }) 
 export class Author extends Document {
-  @Prop({ type: String, unique: true, required: true })
-  firstame: string;
+  @Prop({ type: String, required: true })
+  firstName: string;
 
   @Prop({ type: String, required: true })
   lastName: string;

@@ -9,28 +9,22 @@ import { InjectModel } from '@nestjs/mongoose';
 export class AuthorService {
   constructor(@InjectModel(Author.name) private authorModel: Model<Author>) {}
   create(createAuthorDto: CreateAuthorDto) {
-    // return "Author created successfully"
     return this.authorModel.create(createAuthorDto);
   }
 
   findAll() {
     return this.authorModel.find().exec();
-    // return "Authors found successfully"
   }
 
-  findOne(id: number) {
-    return this.authorModel.findById(id).exec();
-    // return "Author found successfully"
+  findOne(id: string) {
+    return this.authorModel.findById({ _id: id }).exec();
   }
 
-  update(id: number, updateAuthorDto: UpdateAuthorDto) {
-    return this.authorModel.findByIdAndUpdate(id, updateAuthorDto).exec();
-    // return "Author updated successfully"
+  update(id: string, updateAuthorDto: UpdateAuthorDto) {
+    return this.authorModel.findByIdAndUpdate({ _id: id }, updateAuthorDto).exec();
   }
 
-  remove(id: number) {
-    return this.authorModel.findByIdAndDelete(id).exec();
-    // return "Author deleted successfully"
-    // return this.authorModel.findByIdAndDelete(id).exec();
+  remove(id: string) {
+    return this.authorModel.findByIdAndDelete({ _id: id }).exec();
   }
 }
