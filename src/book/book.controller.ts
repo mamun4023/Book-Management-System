@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { BookService } from './book.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
@@ -11,6 +11,10 @@ export class BookController {
 
   @Post()
   async create(@Body() createBookDto: CreateBookDto) {
+    const author = await this.bookService.findOne(createBookDto.author.toString());
+    if (!author) {
+      throw new HttpException('Author not found', HttpStatus.NOT_FOUND);
+    }
     const book = await this.bookService.create(createBookDto);
     return {
       success: true,
@@ -20,13 +24,14 @@ export class BookController {
   }
 
   @Get()
-  async findAll() {
-    const books = await this.bookService.findAll();
-    return {
-      success: true,
-      message: 'Books found successfully',
-      data: books,
-    }
+ async findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('genre') genre?: string,
+    @Query('author') author?: string,
+    @Query('search') search?: string, // optional title filter
+  ) {
+    return this.bookService.findAll({ page, limit, genre, author, search });
   }
 
   @Get(':id')
