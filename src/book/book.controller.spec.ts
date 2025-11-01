@@ -3,6 +3,8 @@ import { BookController } from './book.controller';
 import { BookService } from './book.service';
 import { getModelToken } from '@nestjs/mongoose';
 import { Book } from './book.schema';
+import { AuthorService } from '../author/author.service';
+import { Author } from '../author/author.schema';
 
 describe('BookController', () => {
   let controller: BookController;
@@ -12,13 +14,21 @@ describe('BookController', () => {
       create: jest.fn(),
       find: jest.fn(),
     };
+    const mockAuthorModel = {
+      findOne: jest.fn(),
+    };
     const module: TestingModule = await Test.createTestingModule({
       controllers: [BookController],
       providers: [
         BookService,
+        AuthorService,
         {
           provide: getModelToken(Book.name),
           useValue: mockBookModel,
+        },
+        {
+          provide: getModelToken(Author.name),
+          useValue: mockAuthorModel,
         },
       ],
     }).compile();
