@@ -60,8 +60,8 @@ export class AuthorService {
     return this.authorModel.findById({ _id: id }).exec();
   }
 
-  update(id: string, updateAuthorDto: UpdateAuthorDto) {
-    return this.authorModel.findByIdAndUpdate({ _id: id }, updateAuthorDto).exec();
+  async update(id: string, updateAuthorDto: UpdateAuthorDto) {
+    return await this.authorModel.findByIdAndUpdate({ _id: id }, updateAuthorDto).exec();
   }
 
   remove(id: string) {

@@ -56,11 +56,10 @@ export class AuthorController {
     if (!author) {
       throw new HttpException('Author not found', HttpStatus.NOT_FOUND);
     }
-    const updatedAuthor = await this.authorService.update(id, updateAuthorDto);
+    await this.authorService.update(id, updateAuthorDto);
     return {
       success: true,
       message: 'Author updated successfully',
-      data: updatedAuthor,
     }
   }
 
