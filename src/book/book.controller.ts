@@ -11,14 +11,14 @@ export class BookController {
 
   @Post()
   async create(@Body() createBookDto: CreateBookDto) {
-    const author = await this.bookService.findOne(createBookDto.author.toString());
-    if (!author) {
-      throw new HttpException('Author not found', HttpStatus.NOT_FOUND);
-    }
+ 
     const book = await this.bookService.create(createBookDto);
+    if (!book) {
+      throw new HttpException('Book not Added', HttpStatus.BAD_REQUEST);
+    }
     return {
       success: true,
-      message: 'Book created successfully',
+      message: 'Book Added successfully',
       data: book,
     }
   }
