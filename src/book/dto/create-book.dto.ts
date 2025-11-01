@@ -22,5 +22,5 @@ export class CreateBookDto {
   genre?: string;
 
   @IsNotEmpty()
-  author: Types.ObjectId;
+  authorId: Types.ObjectId;
 }

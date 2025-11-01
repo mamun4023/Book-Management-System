@@ -1,98 +1,180 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Book Management System (NestJS + Mongoose)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A simple REST API built with NestJS 11 and Mongoose for managing Authors and Books. It includes validation, pagination, filtering, and basic CRUD operations.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tech Stack
 
-## Description
+- **Runtime**: Node 22
+- **Framework**: NestJS 11
+- **Database**: MongoDB via Mongoose
+- **Validation**: class-validator, class-transformer
+- **Testing**: Jest, @nestjs/testing
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Features
 
-## Project setup
+- **Authors**: create, list, get, update, delete
+- **Books**: create, list (with pagination/filtering), get, update, delete
+- **Validation**: Global `ValidationPipe` (whitelist, forbid non-whitelisted, transform)
+- **Timestamps**: `createdAt`, `updatedAt` on documents
 
-```bash
-$ npm install
+## Getting Started
+
+### Prerequisites
+
+- Node 22+
+- A running MongoDB instance (local or cloud)
+
+### Environment
+
+Create a `.env` file in the project root:
+
+```
+MONGO_URI=mongodb://localhost:27017/book_mgmt
+PORT=3000
 ```
 
-## Compile and run the project
+### Install
 
-```bash
+```
+npm install
+```
+
+### Run
+
+```
 # development
-$ npm run start
+npm run start:dev
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+# production
+npm run build && npm run start:prod
 ```
 
-## Run tests
+The API will run on `http://localhost:${PORT || 3000}`.
 
-```bash
-# unit tests
-$ npm run test
+### Test
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```
+npm run test
 ```
 
-## Deployment
+## Project Structure (key parts)
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- `src/app.module.ts` – root module, loads Config + Mongo connection
+- `src/main.ts` – bootstraps Nest app, sets global ValidationPipe
+- `src/author/*` – Author module (schema, service, controller, DTOs)
+- `src/book/*` – Book module (schema, service, controller, DTOs)
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Data Models (simplified)
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+### Author
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+- `firstName: string` (required)
+- `lastName: string` (required)
+- `bio?: string`
+- `birthDate?: Date`
 
-## Resources
+### Book
 
-Check out a few resources that may come in handy when working with NestJS:
+- `title: string` (required)
+- `isbn: string` (required, unique, format: `978-3-16-148410-0`)
+- `publishedDate?: Date`
+- `genre?: string` (example enum: Fantasy | Science Fiction | Thriller)
+- `author: ObjectId` (required, ref Author)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## API Reference
 
-## Support
+Base URL: `http://localhost:3000`
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Authors
 
-## Stay in touch
+- `POST /authors`
+  - Body:
+    ```json
+    {
+      "firstName": "John",
+      "lastName": "Doe",
+      "bio": "…",
+      "birthDate": "1990-01-01"
+    }
+    ```
+  - Response: `{ success, message, data }`
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- `GET /authors`
+  - Response: `{ success, message, data: Author[] }`
+
+- `GET /authors/:id`
+  - Validates `:id` as ObjectId
+  - Response: `{ success, message, data }`
+
+- `PATCH /authors/:id`
+  - Body: partial of create payload
+  - Response: `{ success, message, data }`
+
+- `DELETE /authors/:id`
+  - Response: `{ success, message }`
+
+### Books
+
+- `POST /books`
+  - Body:
+    ```json
+    {
+      "title": "My Book",
+      "isbn": "978-3-16-148410-0",
+      "publishedDate": "2024-01-01",
+      "genre": "Fantasy",
+      "author": "<authorObjectId>"
+    }
+    ```
+  - Response: `{ success, message, data }`
+
+- `GET /books`
+  - Query:
+    - `page` (default 1)
+    - `limit` (default 10)
+    - `genre` (optional)
+    - `author` (optional, ObjectId string)
+    - `search` (optional, matches title case-insensitively)
+  - Response:
+    ```json
+    {
+      "success": true,
+      "message": "Books fetched successfully",
+      "page": 1,
+      "limit": 10,
+      "total": 0,
+      "totalPages": 0,
+      "data": []
+    }
+    ```
+
+- `GET /books/:id`
+  - Validates `:id` as ObjectId
+  - Response: `{ success, message, data }`
+
+- `PATCH /books/:id`
+  - Body: partial of create payload
+  - Response: `{ success, message, data }`
+
+- `DELETE /books/:id`
+  - Response: `{ success, message, data }`
+
+## Validation Behavior
+
+Global `ValidationPipe` is configured with:
+
+- `whitelist: true` – strips unknown fields
+- `forbidNonWhitelisted: true` – throws on unknown fields
+- `transform: true` – auto-transforms payloads to DTO types
+
+Validation errors return HTTP 400 with details from NestJS.
+
+## Notes
+
+- Ensure MongoDB indexes are created for unique fields (e.g., `isbn`).
+- Controllers validate `:id` via `mongoose.Types.ObjectId.isValid` and return 400 on invalid IDs.
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+UNLICENSED (see `package.json`).
+

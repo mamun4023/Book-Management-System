@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, Query } from '@nestjs/common';
 import { AuthorService } from './author.service';
 import { CreateAuthorDto } from './dto/create-author.dto';
 import { UpdateAuthorDto } from './dto/update-author.dto';
@@ -23,21 +23,17 @@ export class AuthorController {
   }
 
   @Get()
-  async findAll() {
-    const authors = await this.authorService.findAll();
-    if (!authors) {
-      throw new HttpException('Authors not found', HttpStatus.NOT_FOUND);
-    }
-    return {
-      success: true,
-      message: 'Authors found successfully',
-      data: authors,
-    }
+  async findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('search') search?: string, // optional firstName filter
+  ) {
+    return this.authorService.findAll({ page, limit, search });
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    if(!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new HttpException('Invalid ID', HttpStatus.BAD_REQUEST);
     }
     const author = await this.authorService.findOne(id);
@@ -53,7 +49,7 @@ export class AuthorController {
 
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateAuthorDto: UpdateAuthorDto) {
-     if(!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new HttpException('Invalid ID', HttpStatus.BAD_REQUEST);
     }
     const author = await this.authorService.findOne(id);
@@ -70,7 +66,7 @@ export class AuthorController {
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    if(!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new HttpException('Invalid ID', HttpStatus.BAD_REQUEST);
     }
     const author = await this.authorService.findOne(id);

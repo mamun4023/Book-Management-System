@@ -11,14 +11,16 @@ export class BookController {
 
   @Post()
   async create(@Body() createBookDto: CreateBookDto) {
- 
+    if(!mongoose.Types.ObjectId.isValid(createBookDto.authorId)) {
+      throw new HttpException('Invalid author ID', HttpStatus.BAD_REQUEST);
+    }
     const book = await this.bookService.create(createBookDto);
     if (!book) {
-      throw new HttpException('Book not Added', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Book not created', HttpStatus.BAD_REQUEST);
     }
     return {
       success: true,
-      message: 'Book Added successfully',
+      message: 'Book created successfully',
       data: book,
     }
   }
@@ -28,10 +30,10 @@ export class BookController {
     @Query('page') page = 1,
     @Query('limit') limit = 10,
     @Query('genre') genre?: string,
-    @Query('author') author?: string,
+    @Query('authorId') authorId?: string,
     @Query('search') search?: string, // optional title filter
   ) {
-    return this.bookService.findAll({ page, limit, genre, author, search });
+    return this.bookService.findAll({ page, limit, genre, authorId, search });
   }
 
   @Get(':id')

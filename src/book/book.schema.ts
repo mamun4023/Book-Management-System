@@ -22,7 +22,7 @@ export class Book extends Document {
   genre?: string;
 
   @Prop({ type: Types.ObjectId, ref: Author.name, required: true })
-  author: Author | Types.ObjectId;
+  authorId: Author | Types.ObjectId;
 }
 
 export const BookSchema = SchemaFactory.createForClass(Book);

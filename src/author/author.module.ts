@@ -6,7 +6,9 @@ import { AuthorSchema, Author } from './author.schema';
 
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Author.name, schema: AuthorSchema }])],
+  imports: [
+    MongooseModule.forFeature([{ name: Author.name, schema: AuthorSchema }])
+  ],
   controllers: [AuthorController],
   providers: [AuthorService],
 })

@@ -5,34 +5,49 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Book } from './book.schema';
 import { Model } from 'mongoose';
 import { FilterQuery } from 'mongoose';
+import { AuthorService } from '../author/author.service';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 interface PaginationOptions {
   page: number;
   limit: number;
   genre?: string;
-  author?: string;
+  authorId?: string;
   search?: string;
 }
 
-
 @Injectable()
 export class BookService {
-  constructor(@InjectModel(Book.name) private bookModel: Model<Book>) {}
-  create(createBookDto: CreateBookDto) {
-    const book = new this.bookModel(createBookDto);
-    return book.save();
+  constructor(@InjectModel(Book.name) private bookModel: Model<Book>, private authorService: AuthorService) { }
+  async create(createBookDto: CreateBookDto) {
+    const author = await this.authorService.findOne(createBookDto.authorId.toString());
+    if (!author) {
+      throw new HttpException('Author not found', HttpStatus.NOT_FOUND);
+    }
+
+    const existingBook = await this.bookModel.findOne({ isbn: createBookDto.isbn });
+    if (existingBook) {
+      throw new HttpException('isbn already exists', HttpStatus.BAD_REQUEST);
+    }
+
+    const newBook = new this.bookModel({ ...createBookDto, authorId: author._id });
+    return newBook.save();
   }
 
   async findAll(options: PaginationOptions) {
-    const { page, limit, genre, author, search } = options;
+    const { page, limit, genre, authorId, search } = options;
 
     const filter: FilterQuery<Book> = {};
 
     // optional filters
     if (genre) filter.genre = genre;
-    if (author) filter.author = author;
-    if (search) filter.title = { $regex: search, $options: 'i' }; // case-insensitive search
-
+    if (authorId) filter.authorId = authorId;
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { isbn: { $regex: search, $options: 'i' } },
+      ];
+    }
     // pagination logic
     const skip = (page - 1) * limit;
 
@@ -40,7 +55,6 @@ export class BookService {
     const [data, total] = await Promise.all([
       this.bookModel
         .find(filter)
-        .populate('author')
         .skip(skip)
         .limit(Number(limit))
         .sort({ createdAt: -1 })
@@ -54,12 +68,11 @@ export class BookService {
       page: Number(page),
       limit: Number(limit),
       total,
-      totalPages: Math.ceil(total / limit),
       data,
     };
   }
 
- async findOne(id: string) {
+  async findOne(id: string) {
     return this.bookModel.findById({ _id: id }).exec();
   }
 
