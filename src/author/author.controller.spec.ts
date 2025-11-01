@@ -5,7 +5,9 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Author } from './author.schema';
 
 describe('AuthorController', () => {
+  const mockAuthorId = "507f1f77bcf86cd799439011"
   let controller: AuthorController;
+
   let mockAuthorService: {
     create: jest.Mock;
     findAll: jest.Mock;
@@ -15,6 +17,7 @@ describe('AuthorController', () => {
   };
 
   beforeEach(async () => {
+
     const mockAuthorModel = {
       create: jest.fn(),
       find: jest.fn(),
@@ -75,13 +78,13 @@ describe('AuthorController', () => {
 
     it('throws NOT_FOUND when service returns null', async () => {
       mockAuthorService.findOne.mockResolvedValueOnce(null);
-      await expect(controller.findOne('507f1f77bcf86cd799439011')).rejects.toMatchObject({ status: 404, message: 'Author not found' });
+      await expect(controller.findOne(mockAuthorId)).rejects.toMatchObject({ status: 404, message: 'Author not found' });
     });
 
     it('returns success response on findOne', async () => {
       const author = { _id: 'a1' } as any;
       mockAuthorService.findOne.mockResolvedValueOnce(author);
-      const res = await controller.findOne('507f1f77bcf86cd799439011');
+      const res = await controller.findOne(mockAuthorId);
       expect(res).toEqual({ success: true, message: 'Author found successfully', data: author });
     });
   });
@@ -93,15 +96,15 @@ describe('AuthorController', () => {
 
     it('throws NOT_FOUND when author missing before update', async () => {
       mockAuthorService.findOne.mockResolvedValueOnce(null);
-      await expect(controller.update('507f1f77bcf86cd799439011', {} as any)).rejects.toMatchObject({ status: 404, message: 'Author not found' });
+      await expect(controller.update(mockAuthorId, {} as any)).rejects.toMatchObject({ status: 404, message: 'Author not found' });
     });
 
     it('returns success response on update', async () => {
       mockAuthorService.findOne.mockResolvedValueOnce({ _id: 'a1' } as any);
       const updated = { _id: 'a1', firstName: 'N' } as any;
       mockAuthorService.update.mockResolvedValueOnce(updated);
-      const res = await controller.update('507f1f77bcf86cd799439011', { firstName: 'N' } as any);
-      expect(res).toEqual({ success: true, message: 'Author updated successfully', data: updated });
+      const res = await controller.update(mockAuthorId, { firstName: 'N' } as any);
+      expect(res).toEqual({ success: true, message: 'Author updated successfully' });
     });
   });
 
@@ -112,13 +115,13 @@ describe('AuthorController', () => {
 
     it('throws NOT_FOUND when author missing before delete', async () => {
       mockAuthorService.findOne.mockResolvedValueOnce(null);
-      await expect(controller.remove('507f1f77bcf86cd799439011')).rejects.toMatchObject({ status: 404, message: 'Author not found' });
+      await expect(controller.remove(mockAuthorId)).rejects.toMatchObject({ status: 404, message: 'Author not found' });
     });
 
     it('returns success response on remove', async () => {
       mockAuthorService.findOne.mockResolvedValueOnce({ _id: 'a1' } as any);
       mockAuthorService.remove.mockResolvedValueOnce(undefined);
-      const res = await controller.remove('507f1f77bcf86cd799439011');
+      const res = await controller.remove(mockAuthorId);
       expect(res).toEqual({ success: true, message: 'Author deleted successfully' });
     });
   });

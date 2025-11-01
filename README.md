@@ -13,7 +13,7 @@ A simple REST API built with NestJS 11 and Mongoose for managing Authors and Boo
 ## Features
 
 - **Authors**: create, list, get, update, delete
-- **Books**: create, list (with pagination/filtering), get, update, delete
+- **Books**: create, list, get, update, delete
 - **Validation**: Global `ValidationPipe` (whitelist, forbid non-whitelisted, transform)
 - **Timestamps**: `createdAt`, `updatedAt` on documents
 
@@ -79,7 +79,7 @@ npm run test
 - `isbn: string` (required, unique, format: `978-3-16-148410-0`)
 - `publishedDate?: Date`
 - `genre?: string` (example enum: Fantasy | Science Fiction | Thriller)
-- `author: ObjectId` (required, ref Author)
+- `authorId: ObjectId` (required, ref Author)
 
 ## API Reference
 
@@ -123,7 +123,7 @@ Base URL: `http://localhost:3000`
       "isbn": "978-3-16-148410-0",
       "publishedDate": "2024-01-01",
       "genre": "Fantasy",
-      "author": "<authorObjectId>"
+      "authorId": "<authorObjectId>"
     }
     ```
   - Response: `{ success, message, data }`
@@ -133,7 +133,7 @@ Base URL: `http://localhost:3000`
     - `page` (default 1)
     - `limit` (default 10)
     - `genre` (optional)
-    - `author` (optional, ObjectId string)
+    - `authorId` (optional, ObjectId string)
     - `search` (optional, matches title case-insensitively)
   - Response:
     ```json
@@ -143,7 +143,6 @@ Base URL: `http://localhost:3000`
       "page": 1,
       "limit": 10,
       "total": 0,
-      "totalPages": 0,
       "data": []
     }
     ```

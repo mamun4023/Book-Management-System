@@ -64,7 +64,6 @@ export class BookController {
     return {
       success: true,
       message: 'Book updated successfully',
-      data: book,
     }
   }
 
@@ -77,11 +76,10 @@ export class BookController {
     if (!book) {
       throw new HttpException('Book not found', HttpStatus.NOT_FOUND);
     }
-    const deletedBook = await this.bookService.remove(id);
+    await this.bookService.remove(id);
     return {
       success: true,
       message: 'Book deleted successfully',
-      data: deletedBook,
     }
   }
 }

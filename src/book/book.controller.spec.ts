@@ -137,7 +137,7 @@ describe('BookController', () => {
       const updated = { _id: '1', title: 'New' } as any;
       mockBookService.update.mockResolvedValueOnce(updated);
       const res = await controller.update('507f1f77bcf86cd799439011', { title: 'New' } as any);
-      expect(res).toEqual({ success: true, message: 'Book updated successfully', data: updated });
+      expect(res).toEqual({ success: true, message: 'Book updated successfully'});
     });
   });
 
@@ -156,7 +156,7 @@ describe('BookController', () => {
       const deleted = { acknowledged: true } as any;
       mockBookService.remove.mockResolvedValueOnce(deleted);
       const res = await controller.remove('507f1f77bcf86cd799439011');
-      expect(res).toEqual({ success: true, message: 'Book deleted successfully', data: deleted });
+      expect(res).toEqual({ success: true, message: 'Book deleted successfully' });
     });
   });
 });
